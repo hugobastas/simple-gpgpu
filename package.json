@@ -1,0 +1,22 @@
+{
+  "name": "simple-gpgpu",
+  "version": "0.0.0",
+  "description": "Make GPGPU on the web simple",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": "https://github.com/hugobastas/elm-port-schema",
+  "keywords": [
+    "WebGL",
+    "GPGPU",
+    "typescript"
+  ],
+  "author": "Hugo Bastås",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [ "lib/" ]
+}
