@@ -2,18 +2,28 @@ export class GPU {
   _gl: WebGLRenderingContext
   _canvas: HTMLCanvasElement | OffscreenCanvas
 
-  constructor(arg?: HTMLCanvasElement | WebGLRenderingContext) {
+  constructor(arg: HTMLCanvasElement | WebGLRenderingContext | undefined) {
     if (typeof arg === "undefined") {
       this._canvas = offscreenCanvas()
-      this._gl = this._canvas.getContext("webgl") as WebGLRenderingContext
-      if (this._gl === null) throw new Error("Webgl not supported")
+
+      let gl = this._canvas.getContext("webgl")
+      if (gl === null)
+        throw new WebGLNotSupportedError()
+
+      this._gl = gl
+
       return
     }
 
     if (arg instanceof HTMLCanvasElement) {
       this._canvas = arg
-      this._gl = this._canvas.getContext("webgl") as WebGLRenderingContext
-      if (this._gl === null) throw new Error("Webgl not supported")
+
+      let gl = this._canvas.getContext("webgl")
+      if (gl === null)
+        throw new WebGLNotSupportedError()
+
+      this._gl = gl
+
       return
     }
 
@@ -26,11 +36,11 @@ export class GPU {
     throw new TypeError()
   }
 
-  texture(width: number, height: number): Texture {
+  newTexture(width: number, height: number): Texture {
     return new Texture(this, width, height)
   }
 
-  kernel(glsl: string): Kernel {
+  newKernel(glsl: string): Kernel {
     return new Kernel(this, glsl)
   }
 }
@@ -74,8 +84,8 @@ export class Texture {
       const format = gl.RGBA
       const type = gl.UNSIGNED_BYTE
 
-      gl.bindTexture(gl.TEXTURE_2D, this._glTexture)
-      gl.texImage2D(gl.TEXTURE_2D, 0, format, this.width, this.height, 0, format, type, null)
+      gl.bindTexture(target, this._glTexture)
+      gl.texImage2D(target, 0, format, this.width, this.height, 0, format, type, null)
 
       if (!this.isInitialized) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._glFramebuffer)
@@ -378,7 +388,7 @@ export class Kernel {
       height = this._output.height
 
       newTexture = this._gpu
-        .texture(width, height)
+        .newTexture(width, height)
         .uploadData(new Uint8Array(width * height * 4))
     }
 
@@ -510,4 +520,10 @@ function find<T>(o: Array<T>, predicate: (_: T) => boolean): T | undefined {
       return e
   }
   return undefined
+}
+
+class WebGLNotSupportedError extends Error {
+  constructor() {
+    super("WebGL not supported")
+  }
 }
