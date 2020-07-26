@@ -1,11 +1,10 @@
-export { GPU } from "./gpu"
+export * from "./texture"
+export * from "./kernel"
 
-export {
-  InitializedTexture,
-  UnInitializedTexture,
-  isInitializedTexture,
-  isUnInitializedTexture,
-  Pixel,
-} from "./texture"
+export interface Gpu {
+  _gl: WebGLRenderingContext
+}
 
-export { Kernel } from "./kernel"
+export function gpu(gl: WebGLRenderingContext): Gpu {
+  return { _gl: gl }
+}
