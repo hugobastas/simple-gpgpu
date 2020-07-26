@@ -1,4 +1,4 @@
-import { Gpu } from "./index"
+import * as g from "./index"
 
 export type DataF = (col: number, row: number) => Pixel
 
@@ -10,7 +10,7 @@ export type Pixel = {
 }
 
 export interface Texture {
-  _gpu: Gpu
+  _gpu: g.Gpu
 }
 
 export interface WithWidth {
@@ -41,7 +41,7 @@ export interface WithoutBoundFrameBuffer {
   _glFramebuffer?: never
 }
 
-export function texture(gpu: Gpu): Texture {
+export function newTexture(gpu: g.Gpu): Texture {
   return { _gpu: gpu }
 }
 
