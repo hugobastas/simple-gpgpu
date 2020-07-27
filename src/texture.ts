@@ -9,8 +9,10 @@ export type Pixel = {
   a: number,
 }
 
-export interface Texture {
+export class Texture {
   _gpu: Gpu
+
+  constructor(gpu: Gpu) { this._gpu = gpu }
 }
 
 export interface WithWidth {
@@ -42,7 +44,7 @@ export interface WithoutBoundFrameBuffer {
 }
 
 export function newTexture(gpu: Gpu): Texture {
-  return { _gpu: gpu }
+  return new Texture(gpu)
 }
 
 export type TextureFunc<I, O> = <T extends Texture>(t: T & I) => T & O
