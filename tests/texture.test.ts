@@ -75,26 +75,18 @@ function generateTestArray(width: number, height: number): ArrayBufferView {
 }
 
 expect.extend({
-  toEqualBuffer(received: ArrayBuffer | ArrayBufferView, buffer: ArrayBuffer | ArrayBufferView) {
-    if (received.byteLength != buffer.byteLength) {
+  toEqualBuffer(a: ArrayBuffer | ArrayBufferView, b: ArrayBuffer | ArrayBufferView) {
+    if (a.byteLength != b.byteLength) {
       return {
-        message: () => `expected same byte length. ${received.byteLength} != ${buffer.byteLength}`,
+        message: () => `expected differing byte length. ${a.byteLength} != ${b.byteLength}`,
         pass: false
       }
     }
 
-    let view1: Uint8Array
-    let view2: Uint8Array
-
-    if (received instanceof ArrayBuffer)
-      view1 = new Uint8Array(received)
-    else
-      view1 = new Uint8Array(received.buffer, received.byteOffset, received.byteLength)
-
-    if (buffer instanceof ArrayBuffer)
-      view2 = new Uint8Array(buffer)
-    else
-      view2 = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+    //@ts-ignore
+    let view1 = new Uint8Array(a.buffer || a, a.byteOffset, a.byteLength)
+    //@ts-ignore
+    let view2 = new Uint8Array(b.buffer || b, b.byteOffset, b.byteLength)
 
     let pass = true
     for (let i = 0; i < view1.length; i ++) {
