@@ -1,4 +1,5 @@
 import * as _ from "../src/index"
+import { generateTestArray } from "./util"
 import newGl from "gl"
 
 var gl: WebGLRenderingContext = newGl(100, 100)
@@ -61,18 +62,6 @@ test("Uploading then downloading should result in identical data", () => {
   //@ts-ignore
   expect(data).toEqualBuffer(generateTestArray(4, 3))
 })
-
-function generateTestArray(width: number, height: number): ArrayBufferView {
-  if (width * height * 4 > 255)
-    throw Error("Test data to large")
-
-  let view = new Uint8Array(width * height * 4)
-  for (let i = 0; i < width * height * 4; i ++) {
-    view[i] = i
-  }
-
-  return view
-}
 
 expect.extend({
   toEqualBuffer(a: ArrayBuffer | ArrayBufferView, b: ArrayBuffer | ArrayBufferView) {
