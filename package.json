@@ -7,10 +7,11 @@
     "test": "jest",
     "prepare": "npm run build"
   },
-  "repository": "https://github.com/hugobastas/elm-port-schema",
+  "repository": "https://github.com/hugobastas/simple-gpgpu",
   "keywords": [
-    "WebGL",
-    "GPGPU",
+    "webgl",
+    "gpu",
+    "gpgpu",
     "typescript"
   ],
   "author": "Hugo Bastås",
