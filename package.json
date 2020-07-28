@@ -4,7 +4,8 @@
   "description": "Make GPGPU on the web simple",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build"
   },
   "repository": "https://github.com/hugobastas/elm-port-schema",
   "keywords": [
