@@ -11,7 +11,7 @@ test("Uploading data with unexpected length should result in an error", () => {
     |> _.newTexture
     |> _.width(2)
     |> _.height(3)
-    |> _.createTexture
+    |> _.createGlTexture
 
   expect(() =>
     threeByFourTexture
@@ -42,8 +42,8 @@ test("Uploading then downloading should result in identical data", () => {
     |> _.newTexture
     |> _.width(0)
     |> _.height(0)
-    |> _.createTexture
-    |> _.createBoundFramebuffer
+    |> _.createGlTexture
+    |> _.createFramebuffer
     |> _.uploadData(generateTestArray(0, 0))
     |> _.downloadData
 
@@ -54,8 +54,8 @@ test("Uploading then downloading should result in identical data", () => {
     |> _.newTexture
     |> _.width(4)
     |> _.height(3)
-    |> _.createTexture
-    |> _.createBoundFramebuffer
+    |> _.createGlTexture
+    |> _.createFramebuffer
     |> _.uploadData(generateTestArray(4, 3))
     |> _.downloadData
 

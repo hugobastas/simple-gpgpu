@@ -4,8 +4,8 @@ import {
   Texture,
   width,
   height,
-  createTexture,
-  createBoundFramebuffer,
+  createGlTexture,
+  createFramebuffer,
   fill,
   uploadData,
   downloadData
@@ -37,16 +37,16 @@ test.only("Identity shader", () => {
     |> newTexture
     |> width(4)
     |> height(4)
-    |> createTexture
-    |> createBoundFramebuffer
+    |> createGlTexture
+    |> createFramebuffer
     |> uploadData(generateTestArray(4, 4))
 
   let destinationTexture = gpu
     |> newTexture
     |> width(4)
     |> height(4)
-    |> createTexture
-    |> createBoundFramebuffer
+    |> createGlTexture
+    |> createFramebuffer
     |> fill({ r: 255, g: 0, b: 0, a: 0 })
 
 

@@ -23,24 +23,24 @@ export interface WithHeight {
   _height: number
 }
 
-export interface WithGlTexture extends WithWidth, WithHeight {
-  _glTexture: WebGLTexture
-}
-
 export interface WithoutGlTexture {
   _glTexture?: never
 }
 
-export interface WithGlTextureInitialized extends WithGlTexture {
+export interface WithGlTexture extends WithWidth, WithHeight {
+  _glTexture: WebGLTexture
+}
+
+export interface WithInitializedGlTexture extends WithGlTexture {
   _textureInitialized: true
 }
 
-export interface WithBoundFramebuffer extends WithGlTexture {
-  _glFramebuffer: WebGLFramebuffer
+export interface WithoutFramebuffer {
+  _glFramebuffer?: never
 }
 
-export interface WithoutBoundFrameBuffer {
-  _glFramebuffer?: never
+export interface WithFramebuffer extends WithGlTexture {
+  _glFramebuffer: WebGLFramebuffer
 }
 
 export function newTexture(gpu: Gpu): Texture {
@@ -65,7 +65,7 @@ export function height(h: number): <T extends Texture>(t: T & WithoutGlTexture) 
   }
 }
 
-export function createTexture<T extends Texture>(t: T & WithWidth & WithHeight & WithoutGlTexture): T & WithGlTexture {
+export function createGlTexture<T extends Texture>(t: T & WithWidth & WithHeight & WithoutGlTexture): T & WithGlTexture {
   let gl = t._gpu._gl
 
   let glTexture = gl.createTexture() as WebGLTexture
@@ -81,7 +81,7 @@ export function createTexture<T extends Texture>(t: T & WithWidth & WithHeight &
   return nt
 }
 
-export function createBoundFramebuffer<T extends Texture>(t: T & WithGlTexture & WithoutBoundFrameBuffer): T & WithBoundFramebuffer {
+export function createFramebuffer<T extends Texture>(t: T & WithGlTexture & WithoutFramebuffer): T & WithFramebuffer {
   let gl = t._gpu._gl
 
   //@ts-ignore
@@ -90,13 +90,13 @@ export function createBoundFramebuffer<T extends Texture>(t: T & WithGlTexture &
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t._glTexture, 0)
 
   //@ts-ignore
-  let nt = t as T & WithBoundFramebuffer
+  let nt = t as T & WithFramebuffer
   nt._glFramebuffer = framebuffer
   return nt
 }
 
-export function fill({r, g, b, a}: Pixel): <T extends Texture>(t: T & WithGlTexture) => T & WithGlTextureInitialized {
-  return function <T extends Texture & WithGlTexture>(t: T): T & WithGlTextureInitialized {
+export function fill({r, g, b, a}: Pixel): <T extends Texture>(t: T & WithGlTexture) => T & WithInitializedGlTexture {
+  return function <T extends Texture & WithGlTexture>(t: T): T & WithInitializedGlTexture {
     let data: null | Uint8Array | Uint32Array
     if (r == 0 && g == 0 && b == 0 && a == 0) {
       data = null
@@ -114,14 +114,14 @@ export function fill({r, g, b, a}: Pixel): <T extends Texture>(t: T & WithGlText
     gl.bindTexture(target, t._glTexture)
     gl.texImage2D(target, 0, format, t._width, t._height, 0, format, type, data)
 
-    let nt = t as T & WithGlTextureInitialized
+    let nt = t as T & WithInitializedGlTexture
     nt._textureInitialized = true
     return nt
   }
 }
 
-export function uploadData(a: ArrayBufferView | DataF): <T extends Texture & WithGlTexture>(t: T) => T & WithGlTextureInitialized {
-  return function <T extends Texture & WithGlTexture>(t: T): T & WithGlTextureInitialized {
+export function uploadData(a: ArrayBufferView | DataF): <T extends Texture & WithGlTexture>(t: T) => T & WithInitializedGlTexture {
+  return function <T extends Texture & WithGlTexture>(t: T): T & WithInitializedGlTexture {
     let data: ArrayBufferView
 
     if (typeof a === "function") {
@@ -157,7 +157,7 @@ export function uploadData(a: ArrayBufferView | DataF): <T extends Texture & Wit
     gl.bindTexture(target, t._glTexture)
     gl.texImage2D(target, 0, format, t._width, t._height, 0, format, type, data)
 
-    let nt = t as T & WithGlTextureInitialized
+    let nt = t as T & WithInitializedGlTexture
     nt._textureInitialized = true
     return nt
   }
@@ -169,8 +169,8 @@ export function uploadPartialData(
   y: number,
   width: number,
   height: number
-): <T extends Texture & WithGlTextureInitialized>(t: T) => T {
-  return function <T extends Texture & WithGlTextureInitialized>(t: T): T {
+): <T extends Texture & WithInitializedGlTexture>(t: T) => T {
+  return function <T extends Texture & WithInitializedGlTexture>(t: T): T {
     if (x + width > t._width)
       throw new Error("Invalid x and/or width")
 
@@ -216,7 +216,7 @@ export function uploadPartialData(
   }
 }
 
-export function downloadData(t: Texture & WithBoundFramebuffer): ArrayBuffer {
+export function downloadData(t: Texture & WithFramebuffer): ArrayBuffer {
   let arrayBufferView = new Uint8Array(t._width * t._height * 4)
   downloadSubDataTo_(t, arrayBufferView, 0, 0, t._width, t._height)
   return arrayBufferView.buffer
@@ -224,7 +224,7 @@ export function downloadData(t: Texture & WithBoundFramebuffer): ArrayBuffer {
 
 export function downloadSubData(
   x: number, y: number, width: number, height: number
-): (t: Texture & WithBoundFramebuffer) => ArrayBuffer {
+): (t: Texture & WithFramebuffer) => ArrayBuffer {
   return t => {
     verifyWithinBounds(t, x, y, width, height)
 
@@ -234,7 +234,7 @@ export function downloadSubData(
   }
 }
 
-export function downloadDataTo(d: ArrayBufferView): (t: Texture & WithBoundFramebuffer) => void {
+export function downloadDataTo(d: ArrayBufferView): (t: Texture & WithFramebuffer) => void {
   return t => {
     verifyBufferViewSize(d, t._width * t._height * 4)
 
@@ -244,7 +244,7 @@ export function downloadDataTo(d: ArrayBufferView): (t: Texture & WithBoundFrame
 
 export function downloadSubDataTo(
   x: number, y: number, width: number, height: number, d: ArrayBufferView
-): (t: Texture & WithBoundFramebuffer) => void {
+): (t: Texture & WithFramebuffer) => void {
   return t => {
     verifyWithinBounds(t, x, y, width, height)
     verifyBufferViewSize(d, width * height * 4)
@@ -254,7 +254,7 @@ export function downloadSubDataTo(
 }
 
 function downloadSubDataTo_(
-  t: Texture & WithBoundFramebuffer,
+  t: Texture & WithFramebuffer,
   d: ArrayBufferView,
   x: number,
   y: number,
