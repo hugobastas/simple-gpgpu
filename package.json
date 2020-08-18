@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "prepare": "npm test && npm run build"
+    "prepare": "npm run build"
   },
   "repository": "https://github.com/emmabastas/simple-gpgpu",
   "keywords": [
