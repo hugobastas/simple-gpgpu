@@ -4,7 +4,7 @@
   "description": "Make GPGPU on the web simple",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "tsc --noEmit && jest",
     "prepare": "npm run build"
   },
   "repository": "https://github.com/emmabastas/simple-gpgpu",
