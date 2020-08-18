@@ -1,18 +1,18 @@
 import { Gpu } from "./index"
 import {
   Texture,
-  WithGlTextureInitialized,
-  WithBoundFramebuffer
+  WithInitializedGlTexture,
+  WithFramebuffer
 } from "./texture"
 
-export type Target = "canvas" | Texture & WithBoundFramebuffer
+export type Target = "canvas" | Texture & WithFramebuffer
 
 export type GlslValue =
   number |
   [ number, number ] |
   [ number, number, number ] |
   [ number, number, number, number ] |
-  Texture & WithGlTextureInitialized
+  Texture & WithInitializedGlTexture
 
 export type Uniform = {
   name: string
@@ -24,7 +24,7 @@ export type Uniform = {
   type: "sampler2D"
   location: WebGLUniformLocation
   textureUnit: number
-  texture: Texture & WithGlTextureInitialized | null
+  texture: Texture & WithInitializedGlTexture | null
 }
 
 export interface IncompleteProgram {
