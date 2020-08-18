@@ -7,14 +7,14 @@
     "test": "jest",
     "prepare": "npm run build"
   },
-  "repository": "https://github.com/hugobastas/simple-gpgpu",
+  "repository": "https://github.com/emmabastas/simple-gpgpu",
   "keywords": [
     "webgl",
     "gpu",
     "gpgpu",
     "typescript"
   ],
-  "author": "Hugo Bastås",
+  "author": "Emma Bastås",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.10.5",
