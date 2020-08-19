@@ -252,7 +252,7 @@ function extractUniforms(gl: WebGLRenderingContext, program: WebGLProgram, sourc
 
     let location = gl.getUniformLocation(program, name)
     if (location === null)
-      continue
+      throw new Error(`Unused uniform in shader program: ${name}`)
 
     if (type == "float" || type == "vec2" || type == "vec3" || type == "vec4") {
       uniforms.push({

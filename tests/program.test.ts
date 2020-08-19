@@ -43,6 +43,17 @@ test.only("Invalid fragment shader throws error", () => {
 
 })
 
+test.only("Fragment shader where with unused uniform throws", () => {
+  expect(() => {
+    newGpu(gl)
+      |> newProgram
+      |> fragmentShader(`
+        uniform mediump float foo;
+        void main() { gl_FragColor = vec4(1); }
+      `)
+  }).toThrowError(Error)
+})
+
 test.only("Identity shader", () => {
   let gpu = newGpu(gl)
 
