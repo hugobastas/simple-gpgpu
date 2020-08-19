@@ -24,6 +24,25 @@ import newGl from "gl"
 
 var gl: WebGLRenderingContext = newGl(100, 100)
 
+test.only("Valid fragment shader does not throw error", () => {
+  newGpu(gl)
+    |> newProgram
+    |> fragmentShader("void main() { gl_FragColor = vec4(1); }")
+
+  expect.anything()
+})
+
+
+test.only("Invalid fragment shader throws error", () => {
+  expect(() => {
+    newGpu(gl)
+      |> newProgram
+      |> fragmentShader("foo")
+    }
+  ).toThrow(Error)
+
+})
+
 test.only("Identity shader", () => {
   let gpu = newGpu(gl)
 

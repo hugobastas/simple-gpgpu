@@ -199,8 +199,13 @@ function compileShader(gl: WebGLRenderingContext, source: string, type: number):
   gl.compileShader(shader)
 
   let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
-  if (!success)
-    throw new Error(gl.getShaderInfoLog(shader) || "")
+  if(!success) {
+    let info = gl.getShaderInfoLog(shader)
+    if (type == gl.VERTEX_SHADER)
+      throw new Error("Could not compile vertex shader:\n\n" + info)
+    else
+      throw new Error("Could not compile fragment shader:\n\n" + info)
+  }
 
   return shader
 }
@@ -212,8 +217,10 @@ function linkShaders(gl: WebGLRenderingContext, vert: WebGLShader, frag: WebGLSh
   gl.linkProgram(program)
 
   let success = gl.getProgramParameter(program, gl.LINK_STATUS)
-  if (!success)
-    throw new Error(gl.getProgramInfoLog(program) || "")
+  if (!success) {
+    let info = gl.getProgramInfoLog(program)
+    throw new Error("Could not link WebGL program:\n\n" + info)
+  }
 
   return program
 }
