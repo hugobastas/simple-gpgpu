@@ -38,16 +38,13 @@ export interface Program {
   _uniforms: Array<Uniform>
   _attributeBuffer: WebGLBuffer
   _attributeLocation: GLint
+  _x: number | undefined
+  _y: number | undefined
+  _width: number | undefined
+  _height: number | undefined
 }
 
-export interface WithViewport {
-  _x: number
-  _y: number
-  _width: number
-  _height: number
-}
-
-export interface WithTarget extends WithViewport {
+export interface WithTarget {
   _target: Target
 }
 
@@ -81,6 +78,10 @@ export function fragmentShader(source: string): (program: IncompleteProgram) => 
       _uniforms: uniforms,
       _attributeBuffer: attributeBuffer,
       _attributeLocation: attributeLocation,
+      _x: undefined,
+      _y: undefined,
+      _width: undefined,
+      _height: undefined,
     }
   }
 }
@@ -120,36 +121,21 @@ export function arg(name: string, value: GlslValue): ProgramFunc<{}, {}> {
 }
 
 export function viewport(
-  x: number, y: number, width: number, height: number
-): ProgramFunc<{}, WithViewport> {
+  x?: number, y?: number, width?: number, height?: number
+): ProgramFunc<{}, {}> {
   return function <P extends Program>(p: P) {
-    let np = p as P & WithViewport
-    np._x = x
-    np._y = y
-    np._width = width
-    np._height = height
-    return np
+    p._x = x
+    p._y = y
+    p._width = width
+    p._height = height
+    return p
   }
 }
 
-export function target(
-  target: Target, x?: number, y?: number, width?: number, height?: number
-): ProgramFunc<{}, WithTarget> {
+export function target(target: Target): ProgramFunc<{}, WithTarget> {
   return function <P extends Program>(p: P) {
-    let gl = p._gpu._gl
-
     let np = p as P & WithTarget
     np._target = target
-    np._x = x || 0
-    np._y = y || 0
-
-    if (target == "canvas") {
-      np._width = typeof width == "number" ? width : gl.drawingBufferWidth
-      np._height = typeof height == "number" ? height : gl.drawingBufferHeight
-    } else {
-      np._width = typeof width == "number" ? width : target._width
-      np._height = typeof height == "number" ? height : target._height
-    }
 
     return np
   }
@@ -179,11 +165,25 @@ export function run(p: Program & WithTarget) {
     throw new Error(`Uniform ${uniform.name} has not been assigned a value`)
   }
 
+  let x = typeof p._x == "undefined" ? 0 : p._x
+  let y = typeof p._y == "undefined" ? 0 : p._y
+
+  let width: number
+  let height: number
+
+  if (p._target == "canvas") {
+    width = typeof p._width == "undefined" ? p._gpu._gl.canvas.width : p._width
+    height = typeof p._height == "undefined" ? p._gpu._gl.canvas.height : p._height
+  } else {
+    width = typeof p._width == "undefined" ? p._target._width : p._width
+    height = typeof p._height == "undefined" ? p._target._height : p._height
+  }
+
   gl.enableVertexAttribArray(p._attributeLocation)
   gl.bindBuffer(gl.ARRAY_BUFFER, p._attributeBuffer)
   gl.vertexAttribPointer(p._attributeLocation, 2, gl.FLOAT, false, 0, 0)
 
-  gl.viewport(p._x, p._y, p._width, p._height)
+  gl.viewport(x, y, width, height)
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
 }
 
