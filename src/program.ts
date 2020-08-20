@@ -163,7 +163,7 @@ export function run(p: Program & WithTarget) {
   if (p._target == "canvas")
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   else
-    gl.bindFramebuffer(gl.FRAMEBUFFER, p._target)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, p._target._glFramebuffer)
 
   for (let uniform of p._uniforms) {
     // @ts-ignore
