@@ -70,12 +70,6 @@ test.only("Fragment shader where uniform is not set throws", () => {
 test.only("Identity shader", () => {
   let gpu = newGpu(gl)
 
-  let foo = new Uint8Array(64).fill(0)
-  for (let i = 0; i < 16; i++) { foo[0 + i] = 0xaa }
-  for (let i = 0; i < 16; i++) { foo[16 + i] = 0xbb }
-  for (let i = 0; i < 16; i++) { foo[32 + i] = 0xee }
-  for (let i = 0; i < 16; i++) { foo[48 + i] = 0xff }
-
   let sourceTexture = gpu
     |> newTexture
     |> width(4)
@@ -93,7 +87,7 @@ test.only("Identity shader", () => {
     |> fill({ r: 255, g: 0, b: 0, a: 0 })
 
 
-  let output = gpu
+  gpu
     |> newProgram
     |> fragmentShader(`
 uniform sampler2D sourceTexture;
