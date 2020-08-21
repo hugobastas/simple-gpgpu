@@ -1,7 +1,12 @@
-export interface Gpu {
+export class Gpu {
   _gl: WebGLRenderingContext
+  constructor(gl: WebGLRenderingContext) { this._gl = gl }
+
+  get canvas(): HTMLCanvasElement | OffscreenCanvas {
+    return this._gl.canvas
+  }
 }
 
 export function newGpu(gl: WebGLRenderingContext): Gpu {
-  return { _gl: gl }
+  return new Gpu(gl)
 }
