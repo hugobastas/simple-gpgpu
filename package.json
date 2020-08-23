@@ -1,6 +1,6 @@
 {
   "name": "simple-gpgpu",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Make GPGPU on the web simple",
   "scripts": {
     "build": "tsc",
