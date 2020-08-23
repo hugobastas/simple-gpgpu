@@ -1,33 +1,13 @@
-import { newGpu, Gpu } from "../src/gpu"
-import {
-  newTexture,
-  Texture,
-  width,
-  height,
-  createGlTexture,
-  createFramebuffer,
-  fill,
-  uploadData,
-  downloadData
-} from "../src/texture"
-import {
-  newProgram,
-  Program,
-  fragmentShader,
-  uniform,
-  target,
-  viewport,
-  run,
-} from "../src/program"
+import * as g from "../src/index"
 import { generateTestArray } from "./util"
 import newGl from "gl"
 
 var gl: WebGLRenderingContext = newGl(100, 100)
 
 test.only("Valid fragment shader does not throw error", () => {
-  newGpu(gl)
-    |> newProgram
-    |> fragmentShader("void main() { gl_FragColor = vec4(1); }")
+  g.newGpu(gl)
+    |> g.newProgram
+    |> g.fragmentShader("void main() { gl_FragColor = vec4(1); }")
 
   expect.anything()
 })
@@ -35,9 +15,9 @@ test.only("Valid fragment shader does not throw error", () => {
 
 test.only("Invalid fragment shader throws error", () => {
   expect(() => {
-    newGpu(gl)
-      |> newProgram
-      |> fragmentShader("foo")
+    g.newGpu(gl)
+      |> g.newProgram
+      |> g.fragmentShader("foo")
     }
   ).toThrow(Error)
 
@@ -45,9 +25,9 @@ test.only("Invalid fragment shader throws error", () => {
 
 test.only("Fragment shader where with unused uniform throws", () => {
   expect(() => {
-    newGpu(gl)
-      |> newProgram
-      |> fragmentShader(`
+    g.newGpu(gl)
+      |> g.newProgram
+      |> g.fragmentShader(`
         uniform mediump float foo;
         void main() { gl_FragColor = vec4(1); }
       `)
@@ -56,40 +36,40 @@ test.only("Fragment shader where with unused uniform throws", () => {
 
 test.only("Fragment shader where uniform is not set throws", () => {
   expect(() => {
-    newGpu(gl)
-      |> newProgram
-      |> fragmentShader(`
+    g.newGpu(gl)
+      |> g.newProgram
+      |> g.fragmentShader(`
         uniform mediump float foo;
         void main() { gl_FragColor = vec4(foo); }
       `)
-      |> target("canvas")
-      |> run
+      |> g.target("canvas")
+      |> g.run
   }).toThrowError(Error)
 })
 
 test.only("Identity shader", () => {
-  let gpu = newGpu(gl)
+  let gpu = g.newGpu(gl)
 
   let sourceTexture = gpu
-    |> newTexture
-    |> width(4)
-    |> height(4)
-    |> createGlTexture
-    |> createFramebuffer
-    |> uploadData(generateTestArray(4, 4))
+    |> g.newTexture
+    |> g.width(4)
+    |> g.height(4)
+    |> g.createGlTexture
+    |> g.createFramebuffer
+    |> g.uploadData(generateTestArray(4, 4))
 
   let destinationTexture = gpu
-    |> newTexture
-    |> width(4)
-    |> height(4)
-    |> createGlTexture
-    |> createFramebuffer
-    |> fill({ r: 255, g: 0, b: 0, a: 0 })
+    |> g.newTexture
+    |> g.width(4)
+    |> g.height(4)
+    |> g.createGlTexture
+    |> g.createFramebuffer
+    |> g.fill({ r: 255, g: 0, b: 0, a: 0 })
 
 
   gpu
-    |> newProgram
-    |> fragmentShader(`
+    |> g.newProgram
+    |> g.fragmentShader(`
 uniform sampler2D sourceTexture;
 uniform mediump vec2 output_dimensions;
 void main() {
@@ -98,13 +78,13 @@ void main() {
     (gl_FragCoord.xy) / output_dimensions
   );
 }`)
-    |> uniform("sourceTexture", sourceTexture)
-    |> uniform("output_dimensions", [4, 4])
-    |> target(destinationTexture)
-    |> run
+    |> g.uniform("sourceTexture", sourceTexture)
+    |> g.uniform("output_dimensions", [4, 4])
+    |> g.target(destinationTexture)
+    |> g.run
 
-  let sourceBuffer = downloadData(sourceTexture)
-  let destinationBuffer = downloadData(destinationTexture)
+  let sourceBuffer = g.downloadData(sourceTexture)
+  let destinationBuffer = g.downloadData(destinationTexture)
 
   expect(sourceBuffer).toEqualBuffer(destinationBuffer)
 })

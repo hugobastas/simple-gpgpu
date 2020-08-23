@@ -1,63 +1,63 @@
-import * as _ from "../src/index"
+import * as g from "../src/index"
 import { generateTestArray } from "./util"
 import newGl from "gl"
 
 var gl: WebGLRenderingContext = newGl(100, 100)
 
 test("Uploading data with unexpected length should result in an error", () => {
-  let gpu = _.newGpu(gl)
+  let gpu = g.newGpu(gl)
 
   let threeByFourTexture = gpu
-    |> _.newTexture
-    |> _.width(2)
-    |> _.height(3)
-    |> _.createGlTexture
+    |> g.newTexture
+    |> g.width(2)
+    |> g.height(3)
+    |> g.createGlTexture
 
   expect(() =>
     threeByFourTexture
-      |> _.uploadData(generateTestArray(2, 3))
+      |> g.uploadData(generateTestArray(2, 3))
   ).not.toThrow()
 
   expect(() =>
     threeByFourTexture
-      |> _.uploadData(generateTestArray(1, 2))
+      |> g.uploadData(generateTestArray(1, 2))
   ).toThrow()
 
   expect(() =>
     threeByFourTexture
-      |> _.uploadData(generateTestArray(4, 4))
+      |> g.uploadData(generateTestArray(4, 4))
   ).toThrow()
 
   expect(() =>
     threeByFourTexture
-      |> _.uploadData(generateTestArray(1, 10))
+      |> g.uploadData(generateTestArray(1, 10))
   ).toThrow()
 })
 
 test("Uploading then downloading should result in identical data", () => {
-  let gpu = _.newGpu(gl)
+  let gpu = g.newGpu(gl)
   let data: ArrayBuffer
 
   data = gpu
-    |> _.newTexture
-    |> _.width(0)
-    |> _.height(0)
-    |> _.createGlTexture
-    |> _.createFramebuffer
-    |> _.uploadData(generateTestArray(0, 0))
-    |> _.downloadData
+    |> g.newTexture
+    |> g.width(0)
+    |> g.height(0)
+    |> g.createGlTexture
+    |> g.createFramebuffer
+    |> g.uploadData(generateTestArray(0, 0))
+    |> g.downloadData
 
   //@ts-ignore
   expect(data).toEqualBuffer(generateTestArray(0, 0))
 
   data = gpu
-    |> _.newTexture
-    |> _.width(4)
-    |> _.height(3)
-    |> _.createGlTexture
-    |> _.createFramebuffer
-    |> _.uploadData(generateTestArray(4, 3))
-    |> _.downloadData
+    |> g.newTexture
+    |> g.width(4)
+    |> g.height(3)
+    |> g.createGlTexture
+    |> g.createFramebuffer
+    |> g.uploadData(generateTestArray(4, 3))
+    |> g.downloadData
 
   //@ts-ignore
   expect(data).toEqualBuffer(generateTestArray(4, 3))
