@@ -14,7 +14,7 @@ import {
   newProgram,
   Program,
   fragmentShader,
-  arg,
+  uniform,
   target,
   viewport,
   run,
@@ -98,8 +98,8 @@ void main() {
     (gl_FragCoord.xy) / output_dimensions
   );
 }`)
-    |> arg("sourceTexture", sourceTexture)
-    |> arg("output_dimensions", [4, 4])
+    |> uniform("sourceTexture", sourceTexture)
+    |> uniform("output_dimensions", [4, 4])
     |> target(destinationTexture)
     |> run
 

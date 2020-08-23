@@ -86,7 +86,7 @@ export function fragmentShader(source: string): (program: IncompleteProgram) => 
   }
 }
 
-export function arg(name: string, value: GlslValue): ProgramFunc<{}, {}> {
+export function uniform(name: string, value: GlslValue): ProgramFunc<{}, {}> {
   return function <P extends Program>(p: P) {
     let gl = p._gpu._gl
 
